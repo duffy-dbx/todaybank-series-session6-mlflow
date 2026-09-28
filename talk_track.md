@@ -120,7 +120,9 @@ service that scales up on demand and to zero when idle."
 ---
 
 **CLICK:** Use the endpoint's Query panel (or notebook 03) to score two applicants live.
-  - **How:** On the endpoint page, click **`Query endpoint`** (top-right). Paste the STRONG applicant JSON (see **Query payloads** at the end of this doc) into the request box > **Send** > read the `predictions` value (~0.006 = 0.60%). Then replace with the RISKY JSON > **Send** (~0.079 = 7.93%). (Fallback: in notebook `03_serve`, run **cell 10** - the Step 4 scoring cell - after first running setup cells 2, 4, 6, 8.)
+  - **How:** On the endpoint page, click **`Query endpoint`** (top-right). Paste the STRONG payload below into the request box > **Send** > read the `predictions` value (~0.006 = 0.60%). Then replace with the RISKY payload > **Send** (~0.079 = 7.93%). (Fallback: in notebook `03_serve`, run **cell 10** - the Step 4 scoring cell - after first running setup cells 2, 4, 6, 8.)
+    - **STRONG** (expect ~0.60%): `{"dataframe_records":[{"credit_score":780,"annual_income":95000,"dti_ratio":14.5,"loan_amount":15000,"loan_term_months":36,"interest_rate":7.5,"employment_years":12.0,"num_prior_delinquencies":0,"home_ownership":"OWN","loan_purpose":"home_improvement"}]}`
+    - **RISKY** (expect ~7.93%): `{"dataframe_records":[{"credit_score":540,"annual_income":32000,"dti_ratio":48.0,"loan_amount":25000,"loan_term_months":60,"interest_rate":21.0,"employment_years":0.5,"num_prior_delinquencies":3,"home_ownership":"RENT","loan_purpose":"debt_consolidation"}]}`
 
 **SHOW:** Strong applicant (credit 780, low DTI, no delinquencies) > **PD 0.60%**.
 Then risky applicant (credit 540, high DTI, 3 delinquencies) > **PD 7.93%**.
@@ -132,18 +134,14 @@ built on."
 
 ---
 
-**CLICK:** Open `lending.loan_applications_scored`.
-  - **How:** Left nav > **Catalog** > **`todaybank_mlflow101`** > **`lending`** > **`loan_applications_scored`** > **Sample Data** tab (or top search bar / Cmd+P > type `loan_applications_scored`). 200 rows, each with a probability-of-default score and a risk tier column.
+**CLICK:** Open the scored output table `lending.loan_applications_scored`.
+  - **How:** Left nav > **Catalog** > **`todaybank_mlflow101`** > **`lending`** > **`loan_applications_scored`** (or top search bar / Cmd+P > type `loan_applications_scored`). The **Sample Data** tab previews the columns; the **Overview** tab shows the row count (200). To put the full set + the tier split on screen, run this in a SQL editor / notebook cell: `SELECT risk_tier, count(*) FROM todaybank_mlflow101.lending.loan_applications_scored GROUP BY risk_tier` (and `SELECT * ... LIMIT 200` for the rows).
 
-**SHOW:** 200 fresh applications, each with a PD and a risk tier (Low/Medium/High).
+**SHOW:** The scored table = the original application columns PLUS what the model added: **`pd_score`** (probability of default) and **`risk_tier`** (Low / Medium / High), plus **`model_version`** and **`model_run_id`** so every score is traceable. 200 applications were batch-scored in this run.
 
-**SAY:** "And in batch: 200 new applications scored and written back to a governed table,
-ready for the business. Same model, both real-time and batch."
+**SAY:** "Same model, now run in batch: 200 fresh applications scored in one pass and written straight back into a governed Unity Catalog table the business can pick up. Notice the two columns the model added - a probability of default and a risk tier - and that each row also records which model version and run produced it. One model, one governance layer, serving both a real-time API call and a bulk overnight run."
 
-**SAY (monitoring, conceptual):** "The last part of MLOps is watching it. Because every
-prediction and every access is logged in the platform, you can watch for drift - the world
-changing so the model goes stale - and retrain, re-register, and flip the `@champion` label
-when a better version is ready. That closes the loop."
+**SAY (monitoring, conceptual):** "And the lifecycle doesn't stop at deployment - the last discipline is watching it. Every prediction and every access is logged on the platform, so you can watch for drift, which is just the real world shifting until the model goes stale. When it does, you retrain, re-register, and move the `@champion` label to the better version - no downstream system changes. That's what closes the loop and keeps the model trustworthy over time."
 
 ---
 
