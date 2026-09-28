@@ -49,6 +49,8 @@ debt-to-income, prior delinquencies, etc.) and a `defaulted` column.
 **SAY:** "This is history: 10,000 loans we already know the outcome of. The model learns
 which patterns tend to precede a default. No black box - it is learning from your data."
 
+---
+
 **CLICK:** Run (or scroll through) the training cells - point out the 3 runs with
 different settings.
 
@@ -57,6 +59,8 @@ different settings.
 
 **SAY:** "Every experiment we run is captured automatically. Nothing is lost. This is the
 lab notebook an examiner or a model-risk team would ask for - fully reproducible."
+
+---
 
 **CLICK:** Open the `todaybank-loan-default` experiment (left nav > Experiments).
 
@@ -78,6 +82,8 @@ data lives, with the same permissions and audit. `@champion` is a friendly label
 at the version that is 'in production'. Promoting a new model later is just moving that
 label - no code change, no endpoint rebuild."
 
+---
+
 **CLICK:** Open the model's Lineage tab.
 
 **SHOW:** Lineage from `lending.loan_applications` > the model.
@@ -98,6 +104,8 @@ is the governance story a bank needs from day one."
 system, a dashboard, a batch job. It is no longer a notebook; it is a managed, versioned
 service that scales up on demand and to zero when idle."
 
+---
+
 **CLICK:** Use the endpoint's Query panel (or notebook 03) to score two applicants live.
 
 **SHOW:** Strong applicant (credit 780, low DTI, no delinquencies) > **PD 0.60%**.
@@ -107,6 +115,8 @@ Then risky applicant (credit 540, high DTI, 3 delinquencies) > **PD 7.93%**.
 at about half a percent probability of default; the risky one at nearly eight percent -
 over ten times higher. That number is what a credit decision or a risk-based price can be
 built on."
+
+---
 
 **CLICK:** Open `lending.loan_applications_scored`.
 
