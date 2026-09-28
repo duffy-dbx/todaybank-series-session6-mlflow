@@ -70,7 +70,14 @@ lab notebook an examiner or a model-risk team would ask for - fully reproducible
 **SHOW:** The 3 runs side by side; sort by AUC; highlight the best run.
 
 **SAY:** "Here are our three attempts, compared on one screen. We pick the best performer -
-this one - as our candidate. That comparison is the heart of experiment tracking."
+this one - as our candidate. That comparison is the heart of experiment tracking.
+
+auc_roc means Area Under the Receiver Operating Characteristic curve. It measures how well a binary-classification model separates two groups—for example:
+
+fraudulent vs. legitimate transactions
+sick vs. healthy patients
+likely-to-churn vs. likely-to-stay customers
+The key idea: it evaluates the model’s ranking ability, not just whether its final yes/no predictions are correct."
 
 ---
 
