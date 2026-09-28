@@ -42,6 +42,7 @@ Walk - register and govern; Run - serve and monitor."
 
 **CLICK:** Open notebook `02_train_track_register`. Scroll to the data preview of
 `lending.loan_applications`.
+  - **How:** Left nav > **Workspace** > `Users` > `duffy.walsh@databricks.com` > `todaybank-mlflow-101` > **`02_train_track_register`** (or top search bar / Cmd+P > type `02_train_track_register`). Attach compute via **Connect** (top-right). Scroll to **cell 5** - the `display(spark.table(...))` cell directly under the **`### Data preview`** header (2nd cell of Step 1) - and **execute it (Shift+Enter)** to render the scrollable 10,000-row grid.
 
 **SHOW:** The table - 10,000 past loans with features (credit score, income,
 debt-to-income, prior delinquencies, etc.) and a `defaulted` column.
@@ -53,6 +54,7 @@ which patterns tend to precede a default. No black box - it is learning from you
 
 **CLICK:** Run (or scroll through) the training cells - point out the 3 runs with
 different settings.
+  - **How:** In the same notebook, scroll to **cell 12** - the training cell under the **`## Step 4 - Train 3 runs`** header (it starts with `# Set a named experiment`). First point at the **`CONFIGS`** list near the top of that cell (three `{...}` rows = 100 trees/depth 3, 200/depth 4, 150/depth 5), then **execute it (Shift+Enter)**. Output prints `--- Starting Run 1/2/3 ---` with an AUC each, ending in a `=== Run comparison ===` table. Note: re-running APPENDS 3 new runs to the experiment - to keep it at exactly 3, scroll instead of run.
 
 **SHOW:** MLflow auto-logging - each run captures its parameters, its accuracy metrics
 (AUC), and the model artifact.
@@ -63,6 +65,7 @@ lab notebook an examiner or a model-risk team would ask for - fully reproducible
 ---
 
 **CLICK:** Open the `todaybank-loan-default` experiment (left nav > Experiments).
+  - **How:** Click the **flask / Experiment icon** at the top-right of the notebook (jumps straight to this notebook's experiment); or left nav > **Experiments** > search **`todaybank-loan-default`**. In the runs table, click the **`auc_roc`** column header to sort, then select the top row.
 
 **SHOW:** The 3 runs side by side; sort by AUC; highlight the best run.
 
@@ -74,6 +77,7 @@ this one - as our candidate. That comparison is the heart of experiment tracking
 ## 02 - WALK: One governed model registry (7 min)  [deck: "02 - WALK" divider]
 
 **CLICK:** In Catalog Explorer, open `todaybank_mlflow101.models.loan_default_risk`.
+  - **How:** Left nav > **Catalog** > expand **`todaybank_mlflow101`** > **`models`** schema > **Models** > **`loan_default_risk`** (or top search bar / Cmd+P > type `loan_default_risk` and pick the Model result).
 
 **SHOW:** The registered model, version 1, with the `@champion` alias.
 
@@ -85,6 +89,7 @@ label - no code change, no endpoint rebuild."
 ---
 
 **CLICK:** Open the model's Lineage tab.
+  - **How:** On the model page, click the **`Lineage`** tab in the top tab row (next to Details / Versions). If lineage sits on the version, open **Version 1** first, then its **Lineage**, and click **`See lineage graph`** to show the `loan_applications` table > model arrow.
 
 **SHOW:** Lineage from `lending.loan_applications` > the model.
 
@@ -97,6 +102,7 @@ is the governance story a bank needs from day one."
 ## 03 - RUN: Serve it, score it, watch it (8 min)  [deck: "03 - RUN" divider]
 
 **CLICK:** Open the `todaybank-loan-default` serving endpoint. Show state READY.
+  - **How:** Left nav > **Serving** > **`todaybank-loan-default`** (or top search bar / Cmd+P > type the name). Confirm the green **`Ready`** state at the top of the page.
 
 **SHOW:** The endpoint page - it is a live REST API backed by the `@champion` model.
 
@@ -107,6 +113,7 @@ service that scales up on demand and to zero when idle."
 ---
 
 **CLICK:** Use the endpoint's Query panel (or notebook 03) to score two applicants live.
+  - **How:** On the endpoint page, click **`Query endpoint`** (top-right). Paste the STRONG applicant JSON (see **Query payloads** at the end of this doc) into the request box > **Send** > read the `predictions` value (~0.006 = 0.60%). Then replace with the RISKY JSON > **Send** (~0.079 = 7.93%). (Fallback: in notebook `03_serve`, run **cell 10** - the Step 4 scoring cell - after first running setup cells 2, 4, 6, 8.)
 
 **SHOW:** Strong applicant (credit 780, low DTI, no delinquencies) > **PD 0.60%**.
 Then risky applicant (credit 540, high DTI, 3 delinquencies) > **PD 7.93%**.
@@ -119,6 +126,7 @@ built on."
 ---
 
 **CLICK:** Open `lending.loan_applications_scored`.
+  - **How:** Left nav > **Catalog** > **`todaybank_mlflow101`** > **`lending`** > **`loan_applications_scored`** > **Sample Data** tab (or top search bar / Cmd+P > type `loan_applications_scored`). 200 rows, each with a probability-of-default score and a risk tier column.
 
 **SHOW:** 200 fresh applications, each with a PD and a risk tier (Low/Medium/High).
 
@@ -150,3 +158,16 @@ for Q&A.
 - **Warehouse cold:** preview a table you already opened in pre-flight instead.
 - **Any live failure:** the deck dividers carry the narrative; the recorded PDs (0.60% vs
   7.93%) are in this doc to quote.
+
+
+---
+
+## Query payloads (copy/paste for the endpoint Query panel)
+
+Request format: `{"dataframe_records": [ <applicant> ]}`
+
+STRONG applicant (expect PD ~0.60%):
+`{"dataframe_records":[{"credit_score":780,"annual_income":95000,"dti_ratio":14.5,"loan_amount":15000,"loan_term_months":36,"interest_rate":7.5,"employment_years":12.0,"num_prior_delinquencies":0,"home_ownership":"OWN","loan_purpose":"home_improvement"}]}`
+
+RISKY applicant (expect PD ~7.93%):
+`{"dataframe_records":[{"credit_score":540,"annual_income":32000,"dti_ratio":48.0,"loan_amount":25000,"loan_term_months":60,"interest_rate":21.0,"employment_years":0.5,"num_prior_delinquencies":3,"home_ownership":"RENT","loan_purpose":"debt_consolidation"}]}`
