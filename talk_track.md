@@ -42,20 +42,26 @@ Walk - register and govern; Run - serve and monitor."
 
 **CLICK:** Open notebook `02_train_track_register`. Scroll to the data preview of
 `lending.loan_applications`.
+
 **SHOW:** The table - 10,000 past loans with features (credit score, income,
 debt-to-income, prior delinquencies, etc.) and a `defaulted` column.
+
 **SAY:** "This is history: 10,000 loans we already know the outcome of. The model learns
 which patterns tend to precede a default. No black box - it is learning from your data."
 
 **CLICK:** Run (or scroll through) the training cells - point out the 3 runs with
 different settings.
+
 **SHOW:** MLflow auto-logging - each run captures its parameters, its accuracy metrics
 (AUC), and the model artifact.
+
 **SAY:** "Every experiment we run is captured automatically. Nothing is lost. This is the
 lab notebook an examiner or a model-risk team would ask for - fully reproducible."
 
 **CLICK:** Open the `todaybank-loan-default` experiment (left nav > Experiments).
+
 **SHOW:** The 3 runs side by side; sort by AUC; highlight the best run.
+
 **SAY:** "Here are our three attempts, compared on one screen. We pick the best performer -
 this one - as our candidate. That comparison is the heart of experiment tracking."
 
@@ -64,14 +70,18 @@ this one - as our candidate. That comparison is the heart of experiment tracking
 ## 02 - WALK: One governed model registry (7 min)  [deck: "02 - WALK" divider]
 
 **CLICK:** In Catalog Explorer, open `todaybank_mlflow101.models.loan_default_risk`.
+
 **SHOW:** The registered model, version 1, with the `@champion` alias.
+
 **SAY:** "The winning model is now a governed asset in Unity Catalog - the same place your
 data lives, with the same permissions and audit. `@champion` is a friendly label pointing
 at the version that is 'in production'. Promoting a new model later is just moving that
 label - no code change, no endpoint rebuild."
 
 **CLICK:** Open the model's Lineage tab.
+
 **SHOW:** Lineage from `lending.loan_applications` > the model.
+
 **SAY:** "One click traces this model back to the exact table it learned from. If someone
 asks 'what data trained the model deciding our loans?', that is the answer, on screen. That
 is the governance story a bank needs from day one."
@@ -81,21 +91,27 @@ is the governance story a bank needs from day one."
 ## 03 - RUN: Serve it, score it, watch it (8 min)  [deck: "03 - RUN" divider]
 
 **CLICK:** Open the `todaybank-loan-default` serving endpoint. Show state READY.
+
 **SHOW:** The endpoint page - it is a live REST API backed by the `@champion` model.
+
 **SAY:** "The model is now a production API any system can call - the loan-origination
 system, a dashboard, a batch job. It is no longer a notebook; it is a managed, versioned
 service that scales up on demand and to zero when idle."
 
 **CLICK:** Use the endpoint's Query panel (or notebook 03) to score two applicants live.
+
 **SHOW:** Strong applicant (credit 780, low DTI, no delinquencies) > **PD 0.60%**.
 Then risky applicant (credit 540, high DTI, 3 delinquencies) > **PD 7.93%**.
+
 **SAY:** "Same model, two applicants, scored in real time. The strong applicant comes back
 at about half a percent probability of default; the risky one at nearly eight percent -
 over ten times higher. That number is what a credit decision or a risk-based price can be
 built on."
 
 **CLICK:** Open `lending.loan_applications_scored`.
+
 **SHOW:** 200 fresh applications, each with a PD and a risk tier (Low/Medium/High).
+
 **SAY:** "And in batch: 200 new applications scored and written back to a governed table,
 ready for the business. Same model, both real-time and batch."
 

@@ -43,6 +43,18 @@ EXPERIMENT_PATH = "/Users/duffy.walsh@databricks.com/todaybank-loan-default"
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Data preview - governed feature table in Unity Catalog
+# MAGIC Scroll the grid: 10,000 labeled historical loan applications. This is the same
+# MAGIC governed `lending.loan_applications` table from Session 1's medallion gold layer.
+
+# COMMAND ----------
+
+# Rich, scrollable preview of the governed feature table (for the live walkthrough)
+display(spark.table(f"{CATALOG}.{SCHEMA}.loan_applications"))
+
+# COMMAND ----------
+
 df = spark.table(f"{CATALOG}.{SCHEMA}.loan_applications").toPandas()
 print(f"Loaded {len(df):,} rows")
 print(df["defaulted"].value_counts(normalize=True).rename("pct").to_frame())
